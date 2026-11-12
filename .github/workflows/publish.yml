@@ -1,0 +1,92 @@
+name: Publish to npm
+
+# Runs ONLY when a tag like v0.1.1 is pushed. Never on branch pushes or PRs.
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Minimal permissions: read the repo, and mint an OIDC token for npm
+# Trusted Publishing. No npm token or other secret is used.
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Verify and publish
+    runs-on: ubuntu-latest
+    # Must match the "Environment" configured for the trusted publisher on
+    # npmjs.com (or leave that field empty there). Add required reviewers to
+    # this environment in GitHub to require a manual approval per release.
+    environment: npm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Ensure npm supports Trusted Publishing (>= 11.5.1)
+        run: |
+          current="$(npm --version)"
+          echo "npm $current"
+          if [ "$(printf '%s\n' 11.5.1 "$current" | sort -V | head -n1)" != "11.5.1" ]; then
+            npm install -g npm@11
+            echo "upgraded to npm $(npm --version)"
+          fi
+
+      - name: Check tag matches package.json version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          name="$(node -p "require('./package.json').name")"
+          echo "tag=$GITHUB_REF_NAME package=$name@$version"
+          if [ "$name" != "@uleah/react" ]; then
+            echo "::error::Unexpected package name '$name'"; exit 1
+          fi
+          if [ "$tag" != "$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $version"; exit 1
+          fi
+
+      - name: Check tagged commit is on main
+        run: |
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tagged commit $GITHUB_SHA is not contained in main"; exit 1
+          fi
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Verify package
+        run: pnpm verify:package
+
+      # npm CLI (not pnpm) performs the OIDC exchange with the registry.
+      # Provenance is generated automatically with Trusted Publishing.
+      - name: Publish
+        run: npm publish --access public

@@ -1,9 +1,10 @@
 name: CI
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
-  pull_request:
 
 permissions:
   contents: read
@@ -14,11 +15,12 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint, typecheck, test, build
+    name: Build, typecheck, lint, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      # Uses the pnpm version pinned in package.json ("packageManager").
       - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
@@ -31,18 +33,19 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
-      - name: Lint
-        run: pnpm lint
+      - name: Build
+        run: pnpm build
 
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Lint
+        run: pnpm lint
+
       - name: Test
         run: pnpm test
 
-      - name: Build library
-        run: pnpm build
-
+      # Requires the build output above.
       - name: Verify package
         run: pnpm verify:package
 
@@ -50,6 +53,8 @@ jobs:
         run: pnpm build-storybook
 
   react-18:
+    # Different React major, not a duplicate: guards the lower bound of the
+    # peer range (^18.2 || ^19). Only runtime tests and types are re-run.
     name: Test against React 18
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +69,6 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Peer range is ^18.2 || ^19 — make sure the lower bound keeps working.
       - name: Install React 18
         run: pnpm add -D react@18 react-dom@18 @types/react@18 @types/react-dom@18
 

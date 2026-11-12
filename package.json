@@ -18,6 +18,10 @@
     "type": "git",
     "url": "git+https://github.com/Uleah/Uleah.React.git"
   },
+  "homepage": "https://github.com/Uleah/Uleah.React#readme",
+  "bugs": {
+    "url": "https://github.com/Uleah/Uleah.React/issues"
+  },
   "type": "module",
   "sideEffects": [
     "**/*.css"

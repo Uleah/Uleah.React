@@ -1,14 +1,5 @@
 # Installation
 
-> **Not published yet.** `@uleah/react` is the intended package name, but the npm scope
-> hasn't been verified or claimed. `package.json` sets `"private": true` to prevent an
-> accidental publish. To try the package today, build it and install the tarball:
->
-> ```bash
-> pnpm build && pnpm pack   # creates uleah-react-0.1.0.tgz
-> pnpm add ./path/to/uleah-react-0.1.0.tgz
-> ```
-
 ## Requirements
 
 - `react` and `react-dom` `^18.2.0 || ^19.0.0` (peer dependencies; they're never bundled).

@@ -73,6 +73,6 @@ scripts/verify-package.mjs
 
 ## Releasing
 
-There's no automated publishing. Before the first release: verify that the `@uleah` npm scope is
-available, remove `"private": true` from `package.json`, and add release tooling (for example
-changesets). Follow semantic versioning and update `CHANGELOG.md`.
+Releases are published to npm from GitHub Actions (`.github/workflows/publish.yml`) when a `v*`
+tag is pushed, using npm Trusted Publishing (OIDC, no tokens). The step-by-step process,
+including the one-time manual first publish, is in [releasing.md](releasing.md).
