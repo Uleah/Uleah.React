@@ -77,3 +77,26 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+  package-windows:
+    # The package checks spawn npm and create directory links, which behave
+    # differently on Windows (npm.cmd wrapper, symlink privileges).
+    name: Verify package on Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Verify package
+        run: pnpm verify:package
