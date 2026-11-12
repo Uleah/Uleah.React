@@ -1,0 +1,73 @@
+// -----------------------------------------------------------------------------
+// Uleah Dark — designed independently, not an inversion of Light.
+// Deep blue-grey backgrounds, elevated surfaces get lighter (not darker),
+// accents shift to lighter turquoise steps to keep contrast and calm.
+// -----------------------------------------------------------------------------
+
+@use '../tokens/palette' as *;
+
+$tokens: (
+  'color-background': palette('slate', 950),
+  'color-background-subtle': palette('slate', 925),
+  'color-surface': palette('slate', 900),
+  'color-surface-elevated': palette('slate', 850),
+  'color-surface-sunken': palette('slate', 925),
+  'color-surface-hover': palette('slate', 800),
+  'color-surface-active': palette('slate', 700),
+
+  'color-text': palette('slate', 100),
+  'color-text-muted': palette('slate', 350),
+  'color-text-subtle': palette('slate', 450),
+  'color-text-inverse': palette('slate', 950),
+
+  'color-border': palette('slate', 800),
+  'color-border-strong': palette('slate', 500),
+
+  'color-primary': palette('teal', 350),
+  'color-primary-hover': palette('teal', 300),
+  'color-primary-active': palette('teal', 200),
+  'color-primary-subtle': palette('teal', 900),
+  'color-primary-text': palette('teal', 300),
+  'color-on-primary': palette('teal', 950),
+
+  'color-secondary': palette('slate', 800),
+  'color-secondary-hover': palette('slate', 700),
+  'color-secondary-active': palette('slate', 600),
+  'color-on-secondary': palette('slate', 100),
+
+  'color-focus': palette('teal', 300),
+
+  'color-success': palette('green', 400),
+  'color-success-subtle': palette('green', 900),
+  'color-success-text': palette('green', 300),
+
+  'color-warning': palette('amber', 400),
+  'color-warning-subtle': palette('amber', 900),
+  'color-warning-text': palette('amber', 300),
+
+  'color-danger': palette('red', 500),
+  'color-danger-hover': palette('red', 600),
+  'color-danger-active': palette('red', 700),
+  'color-danger-subtle': palette('red', 900),
+  'color-danger-text': palette('red', 300),
+  'color-on-danger': palette('slate', 0),
+
+  'color-info': palette('blue', 400),
+  'color-info-subtle': palette('blue', 900),
+  'color-info-text': palette('blue', 300),
+
+  // Dark surfaces need deeper, more opaque shadows to read at all.
+  'shadow-xs': 0 1px 2px 0 rgb(0 0 0 / 0.3),
+  'shadow-sm': (
+    0 1px 3px 0 rgb(0 0 0 / 0.35),
+    0 1px 2px -1px rgb(0 0 0 / 0.3),
+  ),
+  'shadow-md': (
+    0 4px 8px -2px rgb(0 0 0 / 0.4),
+    0 2px 4px -2px rgb(0 0 0 / 0.3),
+  ),
+  'shadow-lg': (
+    0 12px 24px -6px rgb(0 0 0 / 0.5),
+    0 4px 8px -4px rgb(0 0 0 / 0.35),
+  ),
+);

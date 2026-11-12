@@ -1,0 +1,28 @@
+// -----------------------------------------------------------------------------
+// Breakpoints (mobile-first, min-width).
+//
+// CSS custom properties cannot be used inside media queries, so breakpoints
+// are SCSS values + mixins here and TypeScript constants in
+// src/foundations/breakpoints.ts. Keep both in sync (a test checks it).
+// -----------------------------------------------------------------------------
+
+@use 'sass:map';
+
+$breakpoints: (
+  'sm': 640px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1280px,
+  '2xl': 1536px,
+);
+
+/// Apply styles from the given breakpoint upwards.
+@mixin up($name) {
+  $value: map.get($breakpoints, $name);
+  @if not $value {
+    @error 'Unknown breakpoint `#{$name}`.';
+  }
+  @media (min-width: $value) {
+    @content;
+  }
+}

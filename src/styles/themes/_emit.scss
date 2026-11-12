@@ -1,0 +1,78 @@
+// -----------------------------------------------------------------------------
+// Emits all design tokens as CSS custom properties and wires up theme modes.
+//
+// Theme contract (framework-agnostic, reused by Uleah.Angular / Uleah.Blazor):
+//
+//   :root                         → primitives, scales, Light semantic colours
+//   [data-ul-theme='light']       → Light semantic colours
+//   [data-ul-theme='dark']        → Dark semantic colours
+//   [data-ul-theme='system']      → Light, or Dark under
+//                                   @media (prefers-color-scheme: dark)
+//
+// Because System mode is resolved by CSS, server-rendered markup is correct
+// on first paint with no JavaScript and no hydration mismatch.
+// -----------------------------------------------------------------------------
+
+@use 'sass:map';
+@use '../tokens/palette';
+@use '../tokens/scales';
+@use 'light';
+@use 'dark';
+
+@mixin declare($map) {
+  @each $name, $value in $map {
+    --ul-#{$name}: #{$value};
+  }
+}
+
+@mixin light-scheme {
+  color-scheme: light;
+  @include declare(light.$tokens);
+}
+
+@mixin dark-scheme {
+  color-scheme: dark;
+  @include declare(dark.$tokens);
+}
+
+:root {
+  @each $hue, $steps in palette.$palette {
+    @each $step, $value in $steps {
+      --ul-palette-#{$hue}-#{$step}: #{$value};
+    }
+  }
+
+  @include declare(scales.$scales);
+  @include declare(light.$tokens);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ul-duration-fast: 0ms;
+    --ul-duration-normal: 0ms;
+    --ul-duration-slow: 0ms;
+  }
+}
+
+[data-ul-theme='light'],
+[data-ul-theme='system'] {
+  @include light-scheme;
+}
+
+[data-ul-theme='dark'] {
+  @include dark-scheme;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-ul-theme='system'] {
+    @include dark-scheme;
+  }
+}
+
+// The theme scope paints its own background and text colour so a dark section
+// inside a light page (or vice versa) renders correctly. It deliberately does
+// NOT change fonts, sizes or box-sizing — that is opt-in via base.css.
+.ul-theme {
+  color: var(--ul-color-text);
+  background-color: var(--ul-color-background);
+}

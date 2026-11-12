@@ -1,0 +1,78 @@
+// -----------------------------------------------------------------------------
+// Uleah Light — the official default theme.
+// Soft cool backgrounds, white surfaces, muted teal and blue-grey accents.
+// -----------------------------------------------------------------------------
+
+@use '../tokens/palette' as *;
+
+$tokens: (
+  // Backgrounds & surfaces
+  'color-background': palette('slate', 50),
+  'color-background-subtle': palette('slate', 100),
+  'color-surface': palette('slate', 0),
+  'color-surface-elevated': palette('slate', 0),
+  'color-surface-sunken': palette('slate', 25),
+  'color-surface-hover': palette('slate', 100),
+  'color-surface-active': palette('slate', 200),
+
+  // Text
+  'color-text': palette('slate', 900),
+  'color-text-muted': palette('slate', 600),
+  'color-text-subtle': palette('slate', 500),
+  'color-text-inverse': palette('slate', 0),
+
+  // Borders
+  'color-border': palette('slate', 200),
+  'color-border-strong': palette('slate', 450),
+
+  // Brand
+  'color-primary': palette('teal', 600),
+  'color-primary-hover': palette('teal', 700),
+  'color-primary-active': palette('teal', 800),
+  'color-primary-subtle': palette('teal', 50),
+  'color-primary-text': palette('teal', 700),
+  'color-on-primary': palette('slate', 0),
+
+  'color-secondary': palette('slate', 100),
+  'color-secondary-hover': palette('slate', 200),
+  'color-secondary-active': palette('slate', 300),
+  'color-on-secondary': palette('slate', 800),
+
+  // Focus
+  'color-focus': palette('teal', 500),
+
+  // Status
+  'color-success': palette('green', 600),
+  'color-success-subtle': palette('green', 50),
+  'color-success-text': palette('green', 700),
+
+  'color-warning': palette('amber', 400),
+  'color-warning-subtle': palette('amber', 50),
+  'color-warning-text': palette('amber', 700),
+
+  'color-danger': palette('red', 600),
+  'color-danger-hover': palette('red', 700),
+  'color-danger-active': palette('red', 800),
+  'color-danger-subtle': palette('red', 50),
+  'color-danger-text': palette('red', 700),
+  'color-on-danger': palette('slate', 0),
+
+  'color-info': palette('blue', 600),
+  'color-info-subtle': palette('blue', 50),
+  'color-info-text': palette('blue', 700),
+
+  // Elevation — restrained, cool-tinted shadows.
+  'shadow-xs': 0 1px 2px 0 rgb(26 32 39 / 0.05),
+  'shadow-sm': (
+    0 1px 3px 0 rgb(26 32 39 / 0.08),
+    0 1px 2px -1px rgb(26 32 39 / 0.06),
+  ),
+  'shadow-md': (
+    0 4px 8px -2px rgb(26 32 39 / 0.08),
+    0 2px 4px -2px rgb(26 32 39 / 0.05),
+  ),
+  'shadow-lg': (
+    0 12px 24px -6px rgb(26 32 39 / 0.12),
+    0 4px 8px -4px rgb(26 32 39 / 0.06),
+  ),
+);

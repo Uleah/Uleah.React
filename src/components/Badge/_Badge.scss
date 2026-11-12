@@ -1,0 +1,73 @@
+@use '../../styles/abstracts' as *;
+
+// -----------------------------------------------------------------------------
+// Badge
+//
+// Public customization points:
+//
+//   --ul-badge-bg   --ul-badge-color   --ul-badge-dot-color
+//   --ul-badge-radius   --ul-badge-font-size   --ul-badge-padding-x
+// -----------------------------------------------------------------------------
+
+.ul-badge {
+  @include component-root;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375em;
+  max-width: 100%;
+  padding: 0 var(--ul-badge-padding-x, var(--_ul-badge-padding-x));
+  min-height: var(--_ul-badge-height);
+  border: var(--ul-border-width-thin) solid transparent;
+  border-radius: var(--ul-badge-radius, var(--ul-radius-full));
+  background-color: var(--ul-badge-bg, var(--_ul-badge-bg));
+  color: var(--ul-badge-color, var(--_ul-badge-color));
+  font-size: var(--ul-badge-font-size, var(--_ul-badge-font-size));
+  font-weight: var(--ul-font-weight-medium);
+  line-height: var(--ul-line-height-tight);
+  letter-spacing: var(--ul-letter-spacing-wide);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+
+  &--sm {
+    --_ul-badge-height: 1.25rem;
+    --_ul-badge-padding-x: var(--ul-spacing-2);
+    --_ul-badge-font-size: var(--ul-font-size-xs);
+  }
+
+  &--md {
+    --_ul-badge-height: 1.5rem;
+    --_ul-badge-padding-x: var(--ul-spacing-2);
+    --_ul-badge-font-size: var(--ul-font-size-sm);
+  }
+
+  &--neutral {
+    --_ul-badge-bg: var(--ul-color-secondary);
+    --_ul-badge-color: var(--ul-color-on-secondary);
+    --_ul-badge-dot: var(--ul-color-text-muted);
+  }
+
+  &--primary {
+    --_ul-badge-bg: var(--ul-color-primary-subtle);
+    --_ul-badge-color: var(--ul-color-primary-text);
+    --_ul-badge-dot: var(--ul-color-primary);
+  }
+
+  @each $status in (success, warning, danger, info) {
+    &--#{$status} {
+      --_ul-badge-bg: var(--ul-color-#{$status}-subtle);
+      --_ul-badge-color: var(--ul-color-#{$status}-text);
+      --_ul-badge-dot: var(--ul-color-#{$status});
+    }
+  }
+}
+
+.ul-badge__dot {
+  flex-shrink: 0;
+  width: 0.5em;
+  height: 0.5em;
+  border-radius: var(--ul-radius-full);
+  background-color: var(--ul-badge-dot-color, var(--_ul-badge-dot));
+}

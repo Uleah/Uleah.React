@@ -1,0 +1,44 @@
+@use 'sass:list';
+
+// -----------------------------------------------------------------------------
+// Shared internal mixins. Not part of the public API.
+// -----------------------------------------------------------------------------
+
+/// Visible keyboard focus ring. Uses outline so it never shifts layout and is
+/// preserved by Windows High Contrast / forced-colors mode.
+@mixin focus-ring {
+  outline: var(--ul-focus-ring-width) solid var(--ul-color-focus);
+  outline-offset: var(--ul-focus-ring-offset);
+}
+
+/// Standard interactive transition. Durations collapse to 0 when the user
+/// prefers reduced motion (see tokens).
+@mixin transition($properties...) {
+  $list: ();
+  @each $p in $properties {
+    $list: list.append($list, $p var(--ul-duration-fast) var(--ul-easing-standard), comma);
+  }
+  transition: $list;
+}
+
+/// Hide content visually while keeping it available to assistive technology.
+@mixin visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/// Base for every Uleah component root: predictable box model and typography
+/// without relying on a global reset in the host application.
+@mixin component-root {
+  box-sizing: border-box;
+  font-family: var(--ul-font-family-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

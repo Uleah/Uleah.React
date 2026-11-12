@@ -1,0 +1,24 @@
+// -----------------------------------------------------------------------------
+// @uleah/react/base.css — OPTIONAL, opt-in base styles.
+//
+// Import this only if you want Uleah to set typography and box-sizing for the
+// content inside a theme scope (`.ul-theme`, rendered by <UleahProvider>).
+// styles.css works without it. Nothing here targets `html`, `body` or bare
+// elements outside a `.ul-theme` scope.
+// -----------------------------------------------------------------------------
+
+.ul-theme {
+  font-family: var(--ul-font-family-sans);
+  font-size: var(--ul-font-size-md);
+  line-height: var(--ul-line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.ul-theme,
+.ul-theme *,
+.ul-theme *::before,
+.ul-theme *::after {
+  box-sizing: border-box;
+}

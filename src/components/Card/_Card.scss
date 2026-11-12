@@ -1,0 +1,128 @@
+@use '../../styles/abstracts' as *;
+
+// -----------------------------------------------------------------------------
+// Card
+//
+// Public customization points:
+//
+//   --ul-card-padding   --ul-card-gap      --ul-card-radius
+//   --ul-card-bg        --ul-card-border-color   --ul-card-shadow
+// -----------------------------------------------------------------------------
+
+.ul-card {
+  @include component-root;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ul-card-gap, var(--_ul-card-gap));
+  min-width: 0;
+  margin: 0;
+  padding: var(--ul-card-padding, var(--_ul-card-padding));
+  border: var(--ul-border-width-thin) solid
+    var(--ul-card-border-color, var(--_ul-card-border-color));
+  border-radius: var(--ul-card-radius, var(--ul-radius-lg));
+  background-color: var(--ul-card-bg, var(--_ul-card-bg));
+  color: var(--ul-color-text);
+  box-shadow: var(--ul-card-shadow, var(--_ul-card-shadow, none));
+  overflow-wrap: anywhere;
+
+  // `li` cards should not show list markers.
+  list-style: none;
+
+  &--outlined {
+    --_ul-card-bg: var(--ul-color-surface);
+    --_ul-card-border-color: var(--ul-color-border);
+  }
+
+  &--elevated {
+    --_ul-card-bg: var(--ul-color-surface-elevated);
+    --_ul-card-border-color: var(--ul-color-border);
+    --_ul-card-shadow: var(--ul-shadow-md);
+  }
+
+  &--filled {
+    --_ul-card-bg: var(--ul-color-background-subtle);
+    --_ul-card-border-color: transparent;
+  }
+
+  &--padding-none {
+    --_ul-card-padding: 0;
+    --_ul-card-gap: 0;
+  }
+
+  &--padding-sm {
+    --_ul-card-padding: var(--ul-spacing-3);
+    --_ul-card-gap: var(--ul-spacing-2);
+  }
+
+  &--padding-md {
+    --_ul-card-padding: var(--ul-spacing-4);
+    --_ul-card-gap: var(--ul-spacing-3);
+
+    @include up('sm') {
+      --_ul-card-padding: var(--ul-spacing-6);
+      --_ul-card-gap: var(--ul-spacing-4);
+    }
+  }
+
+  &--padding-lg {
+    --_ul-card-padding: var(--ul-spacing-6);
+    --_ul-card-gap: var(--ul-spacing-4);
+
+    @include up('sm') {
+      --_ul-card-padding: var(--ul-spacing-8);
+      --_ul-card-gap: var(--ul-spacing-6);
+    }
+  }
+}
+
+.ul-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ul-spacing-1);
+}
+
+.ul-card__title {
+  margin: 0;
+  color: var(--ul-color-text);
+  font-size: var(--ul-font-size-lg);
+  font-weight: var(--ul-font-weight-semibold);
+  line-height: var(--ul-line-height-snug);
+  letter-spacing: var(--ul-letter-spacing-tight);
+}
+
+.ul-card__description {
+  margin: 0;
+  color: var(--ul-color-text-muted);
+  font-size: var(--ul-font-size-sm);
+  line-height: var(--ul-line-height-normal);
+}
+
+.ul-card__content {
+  min-width: 0;
+  font-size: var(--ul-font-size-sm);
+  line-height: var(--ul-line-height-normal);
+}
+
+.ul-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ul-spacing-2);
+
+  &--start {
+    justify-content: flex-start;
+  }
+
+  &--center {
+    justify-content: center;
+  }
+
+  &--end {
+    justify-content: flex-end;
+  }
+
+  &--between {
+    justify-content: space-between;
+  }
+}
