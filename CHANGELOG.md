@@ -23,3 +23,4 @@ changes.
 - Components: `Button`, `Input`, `Card` (`CardHeader`, `CardTitle`, `CardDescription`,
   `CardContent`, `CardFooter`), `Badge`.
 - Public CSS entry points `@uleah/react/styles.css` and the opt-in `@uleah/react/base.css`.
+- Tag-triggered npm publishing workflow using Trusted Publishing (OIDC), and release docs.

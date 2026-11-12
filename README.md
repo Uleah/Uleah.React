@@ -7,7 +7,7 @@ custom properties.
 
 > **Status: 0.1.0, foundation release.** The architecture, token system, theming and four
 > initial components (Button, Input, Card, Badge) are in place. The API may still change before
-> 1.0. The package has **not been published to npm** yet.
+> 1.0 (pre-1.0 minor versions may contain breaking changes).
 
 ---
 
@@ -70,12 +70,9 @@ implementations reproduce.
 
 ## Installation
 
-> The package is not yet published, and the `@uleah` npm scope hasn't been verified as
-> available. Until it is published, build it locally (`pnpm build && pnpm pack`) and install
-> the tarball.
-
 ```bash
 pnpm add @uleah/react
+# or: npm install @uleah/react
 ```
 
 ## Basic usage
@@ -256,7 +253,8 @@ pnpm build-storybook  # static Storybook in storybook-static/
 
 CI (`.github/workflows/ci.yml`) runs format, lint, typecheck, tests, build, package
 verification and the Storybook build on pushes to `main` and on pull requests. It also tests
-against React 18. CI never publishes.
+against React 18. CI never publishes. Releases are published by
+`.github/workflows/publish.yml` when a `v*` tag is pushed (see [docs/releasing.md](docs/releasing.md)).
 
 More detail: [docs/development.md](docs/development.md) · Architecture:
 [docs/architecture.md](docs/architecture.md)
@@ -284,7 +282,7 @@ Near term:
 3. Overlays with focus management: Dialog, Popover, Tooltip.
 4. Visual regression testing (Storybook + Playwright) and manual screen-reader passes.
 5. A machine-readable token export (JSON) for Uleah.Angular and Uleah.Blazor.
-6. Verify the npm scope, then set up release tooling (changesets) and a first publish.
+6. Release tooling for changelogs and version bumps (for example changesets).
 
 ## License
 
