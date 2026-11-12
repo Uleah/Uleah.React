@@ -9,7 +9,7 @@
  *  6. The type declarations resolve for consumers using `moduleResolution: nodenext`
  *     and `bundler`, and the CSS subpath exports resolve.
  */
-import { execFileSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import {
   existsSync,
   mkdirSync,
@@ -27,6 +27,57 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 let failures = 0;
+
+/**
+ * Run the npm CLI and return its stdout, on Windows, Linux and macOS.
+ *
+ * `execFileSync('npm', …)` fails on Windows: npm is a `npm.cmd` wrapper, and
+ * Node refuses to spawn `.cmd` files without a shell (ENOENT / EINVAL since
+ * the CVE-2024-27980 fix). Instead we run npm's JavaScript entry point with
+ * the current Node binary, which needs no shell on any platform. If npm's CLI
+ * cannot be located (unusual installs), fall back to a shell on Windows only;
+ * the arguments are fixed literals, so no user input reaches the shell.
+ */
+function findNpmCli() {
+  const nodeDir = dirname(process.execPath);
+  const candidates = [
+    // Set when the script is started through `npm run`.
+    process.env.npm_execpath,
+    // Windows installers, nvm-windows, Volta: <node dir>/node_modules/npm
+    join(nodeDir, 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+    // Linux/macOS installers, nvm, Homebrew: <prefix>/lib/node_modules/npm
+    join(nodeDir, '..', 'lib', 'node_modules', 'npm', 'bin', 'npm-cli.js'),
+  ];
+  return candidates.find((file) => file && /npm-cli\.js$/.test(file) && existsSync(file));
+}
+
+function runNpm(args, options) {
+  const cli = findNpmCli();
+  const spawnOptions = { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], ...options };
+  try {
+    if (cli) return execFileSync(process.execPath, [cli, ...args], spawnOptions);
+    if (process.platform === 'win32') {
+      return execSync(`npm ${args.join(' ')}`, spawnOptions);
+    }
+    return execFileSync('npm', args, spawnOptions);
+  } catch (error) {
+    // Surface npm's own output instead of a bare "Command failed".
+    const details = [error.stderr, error.stdout].filter(Boolean).join('\n').trim();
+    throw new Error(
+      `npm ${args.join(' ')} failed (${error.code ?? `exit code ${error.status}`})` +
+        (details ? `:\n${details}` : ''),
+      { cause: error },
+    );
+  }
+}
+
+/**
+ * Link a directory. Windows directory symlinks need admin rights or
+ * Developer Mode; junctions do not. The type is ignored on other platforms.
+ */
+function linkDir(target, path) {
+  symlinkSync(target, path, process.platform === 'win32' ? 'junction' : 'dir');
+}
 
 function check(condition, message) {
   if (condition) console.log(`  ✓ ${message}`);
@@ -95,9 +146,7 @@ check(
 );
 
 console.log('tarball');
-const [packed] = JSON.parse(
-  execFileSync('npm', ['pack', '--dry-run', '--json'], { cwd: root, encoding: 'utf8' }),
-);
+const [packed] = JSON.parse(runNpm(['pack', '--dry-run', '--json'], { cwd: root }));
 const files = packed.files.map((f) => f.path);
 check(files.includes('dist/styles.css') && files.includes('dist/base.css'), 'includes CSS');
 check(files.includes('dist/index.d.ts'), 'includes type declarations');
@@ -113,15 +162,11 @@ const consumer = mkdtempSync(join(tmpdir(), 'uleah-consumer-'));
 try {
   mkdirSync(join(consumer, 'node_modules/@uleah'), { recursive: true });
   mkdirSync(join(consumer, 'node_modules/@types'), { recursive: true });
-  symlinkSync(root, join(consumer, 'node_modules/@uleah/react'), 'dir');
+  linkDir(root, join(consumer, 'node_modules/@uleah/react'));
   for (const dep of ['react', 'react-dom'])
-    symlinkSync(join(root, 'node_modules', dep), join(consumer, 'node_modules', dep), 'dir');
+    linkDir(join(root, 'node_modules', dep), join(consumer, 'node_modules', dep));
   for (const dep of ['react', 'react-dom'])
-    symlinkSync(
-      join(root, 'node_modules/@types', dep),
-      join(consumer, 'node_modules/@types', dep),
-      'dir',
-    );
+    linkDir(join(root, 'node_modules/@types', dep), join(consumer, 'node_modules/@types', dep));
   writeFileSync(join(consumer, 'package.json'), JSON.stringify({ type: 'module' }));
   writeFileSync(
     join(consumer, 'app.tsx'),
