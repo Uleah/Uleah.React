@@ -1,0 +1,90 @@
+// -----------------------------------------------------------------------------
+// Primitive palette
+//
+// Raw colour values. Components must NEVER reference these directly — they
+// consume semantic tokens (see themes/_light.scss and themes/_dark.scss).
+// Primitives are also emitted as `--ul-palette-*` custom properties so custom
+// themes can reference them.
+// -----------------------------------------------------------------------------
+
+$palette: (
+  // Muted turquoise / desaturated teal — brand accent.
+  'teal': (
+    50: #eef7f6,
+    100: #d5ebe8,
+    200: #acd6d2,
+    300: #7dbcb6,
+    350: #5aaba4,
+    400: #549f99,
+    500: #3b847f,
+    600: #2e6b67,
+    700: #275754,
+    800: #224745,
+    900: #1e3b3a,
+    950: #0e2423,
+  ),
+  // Blue-grey / soft slate — neutrals for text, borders and surfaces.
+  'slate': (
+    0: #ffffff,
+    25: #f8fafb,
+    50: #f2f5f7,
+    100: #e7ecf0,
+    200: #d4dce3,
+    300: #b5c1cc,
+    350: #9aa7b4,
+    400: #8d9bab,
+    450: #7d8c9b,
+    500: #66758a,
+    600: #52606e,
+    700: #404c58,
+    800: #2c353f,
+    850: #232b33,
+    900: #1a2027,
+    925: #161c22,
+    950: #12171c,
+  ),
+  'green': (
+    50: #edf7f1,
+    100: #d3ecdd,
+    300: #84c3a0,
+    400: #4fa173,
+    600: #2a6b47,
+    700: #23573b,
+    900: #173a28,
+  ),
+  'amber': (
+    50: #fbf5e8,
+    100: #f5e6c3,
+    300: #e3b65d,
+    400: #d49b33,
+    600: #8c6216,
+    700: #6f4e14,
+    900: #3f2d0e,
+  ),
+  'red': (
+    50: #fcf0f0,
+    100: #f7dada,
+    300: #e59a9a,
+    400: #d97070,
+    500: #b14648,
+    600: #a33d40,
+    700: #873335,
+    800: #6d292b,
+    900: #4c2021,
+  ),
+  'blue': (
+    50: #eef4fb,
+    100: #d6e4f5,
+    300: #8fb3e0,
+    400: #6694cf,
+    600: #3b6196,
+    700: #324f79,
+    900: #1f3049,
+  ),
+);
+
+/// Reference a primitive palette colour as a CSS custom property.
+/// @example scss  color: palette('teal', 600);
+@function palette($hue, $step) {
+  @return var(--ul-palette-#{$hue}-#{$step});
+}

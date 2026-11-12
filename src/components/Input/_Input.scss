@@ -1,0 +1,124 @@
+@use '../../styles/abstracts' as *;
+
+// -----------------------------------------------------------------------------
+// Input (field = label + control + message)
+//
+// Public customization points (set on `.ul-field`, the input, or any ancestor):
+//
+//   --ul-input-height        --ul-input-padding-x   --ul-input-font-size
+//   --ul-input-radius        --ul-input-bg          --ul-input-color
+//   --ul-input-border-color  --ul-input-border-color-hover
+//   --ul-input-border-color-invalid
+//   --ul-field-gap           --ul-field-label-color
+// -----------------------------------------------------------------------------
+
+.ul-field {
+  @include component-root;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--ul-field-gap, var(--ul-spacing-1));
+  min-width: 0;
+  width: 100%;
+
+  &--sm {
+    --_ul-input-height: var(--ul-control-height-sm);
+    --_ul-input-padding-x: var(--ul-spacing-2);
+    --_ul-input-font-size: var(--ul-font-size-sm);
+  }
+
+  &--md {
+    --_ul-input-height: var(--ul-control-height-md);
+    --_ul-input-padding-x: var(--ul-spacing-3);
+    --_ul-input-font-size: var(--ul-font-size-sm);
+  }
+
+  &--lg {
+    --_ul-input-height: var(--ul-control-height-lg);
+    --_ul-input-padding-x: var(--ul-spacing-4);
+    --_ul-input-font-size: var(--ul-font-size-md);
+  }
+}
+
+.ul-field__label {
+  color: var(--ul-field-label-color, var(--ul-color-text));
+  font-size: var(--ul-font-size-sm);
+  font-weight: var(--ul-font-weight-medium);
+  line-height: var(--ul-line-height-snug);
+  overflow-wrap: anywhere;
+}
+
+.ul-field__required {
+  margin-inline-start: 0.125em;
+  color: var(--ul-color-danger-text);
+}
+
+.ul-input {
+  @include component-root;
+  @include transition(border-color, box-shadow, background-color);
+
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--ul-input-height, var(--_ul-input-height));
+  margin: 0;
+  padding: var(--ul-spacing-1) var(--ul-input-padding-x, var(--_ul-input-padding-x));
+  // Priority: state (invalid / focus) > hover > customized base > default.
+  border: var(--ul-border-width-thin) solid
+    var(
+      --_ul-input-state-border,
+      var(--_ul-input-hover-border, var(--ul-input-border-color, var(--ul-color-border-strong)))
+    );
+  border-radius: var(--ul-input-radius, var(--ul-radius-md));
+  background-color: var(--ul-input-bg, var(--ul-color-surface));
+  color: var(--ul-input-color, var(--ul-color-text));
+  box-shadow: var(--ul-shadow-xs);
+  font-size: var(--ul-input-font-size, var(--_ul-input-font-size));
+  line-height: var(--ul-line-height-normal);
+  appearance: none;
+
+  &::placeholder {
+    color: var(--ul-color-text-subtle);
+    opacity: 1;
+  }
+
+  &:hover:not(:disabled, :read-only, :focus) {
+    --_ul-input-hover-border: var(--ul-input-border-color-hover, var(--ul-color-text-muted));
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+    --_ul-input-state-border: var(--ul-color-focus);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+
+  &:read-only:not(:disabled) {
+    background-color: var(--ul-color-surface-sunken);
+    box-shadow: none;
+  }
+
+  &[aria-invalid='true'] {
+    --_ul-input-state-border: var(--ul-input-border-color-invalid, var(--ul-color-danger));
+  }
+
+  &[aria-invalid='true']:focus-visible {
+    outline-color: var(--ul-input-border-color-invalid, var(--ul-color-danger));
+  }
+}
+
+.ul-field__message {
+  margin: 0;
+  color: var(--ul-color-text-muted);
+  font-size: var(--ul-font-size-xs);
+  line-height: var(--ul-line-height-normal);
+  overflow-wrap: anywhere;
+
+  &--error {
+    color: var(--ul-color-danger-text);
+  }
+}

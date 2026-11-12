@@ -1,0 +1,192 @@
+@use '../../styles/abstracts' as *;
+
+// -----------------------------------------------------------------------------
+// Button
+//
+// Public customization points (never declared by Uleah, so you can set them on
+// the button itself via className/style, or on any ancestor):
+//
+//   --ul-button-height        --ul-button-padding-x    --ul-button-gap
+//   --ul-button-font-size     --ul-button-font-weight  --ul-button-radius
+//   --ul-button-bg            --ul-button-bg-hover     --ul-button-bg-active
+//   --ul-button-color         --ul-button-border-color --ul-button-shadow
+//
+// Variables prefixed `--_ul-` are internal and may change without notice.
+// -----------------------------------------------------------------------------
+
+.ul-button {
+  @include component-root;
+  @include transition(background-color, border-color, color, box-shadow);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ul-button-gap, var(--_ul-button-gap));
+  min-height: var(--ul-button-height, var(--_ul-button-height));
+  max-width: 100%;
+  margin: 0;
+  padding: var(--ul-spacing-1) var(--ul-button-padding-x, var(--_ul-button-padding-x));
+  border: var(--ul-border-width-thin) solid
+    var(--ul-button-border-color, var(--_ul-button-border-color));
+  border-radius: var(--ul-button-radius, var(--ul-radius-md));
+  background-color: var(--ul-button-bg, var(--_ul-button-bg));
+  color: var(--ul-button-color, var(--_ul-button-color));
+  box-shadow: var(--ul-button-shadow, var(--_ul-button-shadow, none));
+  font-size: var(--ul-button-font-size, var(--_ul-button-font-size));
+  font-weight: var(--ul-button-font-weight, var(--ul-font-weight-medium));
+  line-height: var(--ul-line-height-tight);
+  letter-spacing: var(--ul-letter-spacing-normal);
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
+
+  &:not(:disabled, [aria-disabled='true']):hover {
+    background-color: var(--ul-button-bg-hover, var(--_ul-button-bg-hover));
+  }
+
+  &:not(:disabled, [aria-disabled='true']):active {
+    background-color: var(--ul-button-bg-active, var(--_ul-button-bg-active));
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+  }
+
+  &:disabled {
+    opacity: var(--ul-opacity-disabled);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Sizes
+  // ---------------------------------------------------------------------------
+
+  &--sm {
+    --_ul-button-height: var(--ul-control-height-sm);
+    --_ul-button-padding-x: var(--ul-spacing-3);
+    --_ul-button-gap: var(--ul-spacing-1);
+    --_ul-button-font-size: var(--ul-font-size-sm);
+  }
+
+  &--md {
+    --_ul-button-height: var(--ul-control-height-md);
+    --_ul-button-padding-x: var(--ul-spacing-4);
+    --_ul-button-gap: var(--ul-spacing-2);
+    --_ul-button-font-size: var(--ul-font-size-sm);
+  }
+
+  &--lg {
+    --_ul-button-height: var(--ul-control-height-lg);
+    --_ul-button-padding-x: var(--ul-spacing-6);
+    --_ul-button-gap: var(--ul-spacing-2);
+    --_ul-button-font-size: var(--ul-font-size-md);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Variants
+  // ---------------------------------------------------------------------------
+
+  &--primary {
+    --_ul-button-bg: var(--ul-color-primary);
+    --_ul-button-bg-hover: var(--ul-color-primary-hover);
+    --_ul-button-bg-active: var(--ul-color-primary-active);
+    --_ul-button-color: var(--ul-color-on-primary);
+    --_ul-button-border-color: transparent;
+    --_ul-button-shadow: var(--ul-shadow-xs);
+  }
+
+  &--secondary {
+    --_ul-button-bg: var(--ul-color-secondary);
+    --_ul-button-bg-hover: var(--ul-color-secondary-hover);
+    --_ul-button-bg-active: var(--ul-color-secondary-active);
+    --_ul-button-color: var(--ul-color-on-secondary);
+    --_ul-button-border-color: transparent;
+  }
+
+  &--outline {
+    --_ul-button-bg: var(--ul-color-surface);
+    --_ul-button-bg-hover: var(--ul-color-surface-hover);
+    --_ul-button-bg-active: var(--ul-color-surface-active);
+    --_ul-button-color: var(--ul-color-text);
+    --_ul-button-border-color: var(--ul-color-border-strong);
+    --_ul-button-shadow: var(--ul-shadow-xs);
+  }
+
+  &--ghost {
+    --_ul-button-bg: transparent;
+    --_ul-button-bg-hover: var(--ul-color-surface-hover);
+    --_ul-button-bg-active: var(--ul-color-surface-active);
+    --_ul-button-color: var(--ul-color-text);
+    --_ul-button-border-color: transparent;
+  }
+
+  &--danger {
+    --_ul-button-bg: var(--ul-color-danger);
+    --_ul-button-bg-hover: var(--ul-color-danger-hover);
+    --_ul-button-bg-active: var(--ul-color-danger-active);
+    --_ul-button-color: var(--ul-color-on-danger);
+    --_ul-button-border-color: transparent;
+    --_ul-button-shadow: var(--ul-shadow-xs);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Modifiers
+  // ---------------------------------------------------------------------------
+
+  &--full-width {
+    display: flex;
+    width: 100%;
+  }
+
+  &--loading {
+    cursor: progress;
+  }
+}
+
+.ul-button__label {
+  // Long labels wrap instead of overflowing narrow containers.
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ul-button__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+
+  > svg {
+    width: 1.15em;
+    height: 1.15em;
+  }
+}
+
+.ul-button__spinner {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--ul-radius-full);
+  animation: ul-button-spin 0.7s linear infinite;
+
+  // The spinner communicates progress, so it keeps moving — just slowly —
+  // for users who prefer reduced motion.
+  @media (prefers-reduced-motion: reduce) {
+    animation-duration: 2s;
+  }
+}
+
+@keyframes ul-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

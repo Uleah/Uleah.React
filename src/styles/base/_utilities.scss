@@ -1,0 +1,7 @@
+@use '../abstracts' as *;
+
+// Internal helper used by components (e.g. visually hidden labels). Exposed as
+// a class so screen-reader-only text works without extra DOM wrappers.
+.ul-visually-hidden {
+  @include visually-hidden;
+}

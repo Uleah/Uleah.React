@@ -1,0 +1,103 @@
+// -----------------------------------------------------------------------------
+// Theme-independent scales
+//
+// Typography, spacing, radii, borders, z-index, control sizes and motion.
+// Emitted on :root so they are available everywhere; they can be overridden
+// at any scope (custom themes, a section of the page, a single component).
+// -----------------------------------------------------------------------------
+
+$scales: (
+  // Typography
+  'font-family-sans': (
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif,
+  ),
+  'font-family-mono': (
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    'Liberation Mono',
+    monospace,
+  ),
+  'font-size-xs': 0.75rem,
+  'font-size-sm': 0.875rem,
+  'font-size-md': 1rem,
+  'font-size-lg': 1.125rem,
+  'font-size-xl': 1.25rem,
+  'font-size-2xl': 1.5rem,
+  'font-size-3xl': 1.875rem,
+  'font-weight-regular': 400,
+  'font-weight-medium': 500,
+  'font-weight-semibold': 600,
+  'font-weight-bold': 700,
+  'line-height-tight': 1.25,
+  'line-height-snug': 1.375,
+  'line-height-normal': 1.5,
+  'line-height-relaxed': 1.625,
+  'letter-spacing-tight': -0.011em,
+  'letter-spacing-normal': 0,
+  'letter-spacing-wide': 0.02em,
+
+  // Spacing — 4px base grid.
+  'spacing-0': 0,
+  'spacing-1': 0.25rem,
+  'spacing-2': 0.5rem,
+  'spacing-3': 0.75rem,
+  'spacing-4': 1rem,
+  'spacing-5': 1.25rem,
+  'spacing-6': 1.5rem,
+  'spacing-8': 2rem,
+  'spacing-10': 2.5rem,
+  'spacing-12': 3rem,
+  'spacing-16': 4rem,
+
+  // Radii
+  'radius-none': 0,
+  'radius-sm': 0.25rem,
+  'radius-md': 0.375rem,
+  'radius-lg': 0.625rem,
+  'radius-xl': 0.875rem,
+  'radius-full': 9999px,
+
+  // Borders
+  'border-width-thin': 1px,
+  'border-width-thick': 2px,
+
+  // Focus ring
+  'focus-ring-width': 2px,
+  'focus-ring-offset': 2px,
+
+  // Control heights (buttons, inputs). All ≥ 24px (WCAG 2.2 target size).
+  'control-height-sm': 2rem,
+  'control-height-md': 2.5rem,
+  'control-height-lg': 3rem,
+
+  // Z-index layers
+  'z-index-base': 0,
+  'z-index-dropdown': 1000,
+  'z-index-sticky': 1100,
+  'z-index-overlay': 1200,
+  'z-index-modal': 1300,
+  'z-index-popover': 1400,
+  'z-index-toast': 1500,
+  'z-index-tooltip': 1600,
+
+  // Motion
+  'duration-instant': 0ms,
+  'duration-fast': 120ms,
+  'duration-normal': 180ms,
+  'duration-slow': 280ms,
+  'easing-standard': cubic-bezier(0.2, 0, 0, 1),
+  'easing-in': cubic-bezier(0.4, 0, 1, 1),
+  'easing-out': cubic-bezier(0, 0, 0.2, 1),
+
+  // States
+  'opacity-disabled': 0.5,
+);
