@@ -7,6 +7,14 @@ changes.
 
 ## [Unreleased]
 
+### Added
+
+- `Dropdown` (first version): select-only combobox with single and multiple selection,
+  controlled and uncontrolled value and open state, previous/next navigation buttons, type-ahead,
+  long-option truncation or wrapping, custom option and value rendering, hidden inputs for forms,
+  and an adaptive popup that flips above the trigger and is portalled into the theme scope so it
+  is not clipped inside tables or scrolling containers.
+
 ## [0.1.0] - Unreleased
 
 ### Added

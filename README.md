@@ -207,12 +207,13 @@ The full list of public variables and stable class names is in
 
 ## Components
 
-| Component | What it is                                                                                     | Docs                                                   |
-| --------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `Button`  | Native button: 5 variants, 3 sizes, loading state                                              | [docs/components/button.md](docs/components/button.md) |
-| `Input`   | Labelled text field with helper and error text                                                 | [docs/components/input.md](docs/components/input.md)   |
-| `Card`    | Composable surface (`CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`) | [docs/components/card.md](docs/components/card.md)     |
-| `Badge`   | Compact status label with an optional dot                                                      | [docs/components/badge.md](docs/components/badge.md)   |
+| Component  | What it is                                                                                     | Docs                                                       |
+| ---------- | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| `Button`   | Native button: 5 variants, 3 sizes, loading state                                              | [docs/components/button.md](docs/components/button.md)     |
+| `Input`    | Labelled text field with helper and error text                                                 | [docs/components/input.md](docs/components/input.md)       |
+| `Card`     | Composable surface (`CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`) | [docs/components/card.md](docs/components/card.md)         |
+| `Badge`    | Compact status label with an optional dot                                                      | [docs/components/badge.md](docs/components/badge.md)       |
+| `Dropdown` | Select-only combobox: single/multiple selection, arrow buttons, adaptive popup                 | [docs/components/dropdown.md](docs/components/dropdown.md) |
 
 ## Accessibility
 

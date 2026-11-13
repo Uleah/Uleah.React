@@ -1,0 +1,286 @@
+@use '../../styles/abstracts' as *;
+
+// -----------------------------------------------------------------------------
+// Dropdown (select-only combobox + listbox popup)
+//
+// Reuses the field layout from Input (`.ul-field`, label, message, sizes).
+//
+// Public customization points (set on `.ul-dropdown`, the popup, or any ancestor):
+//
+//   --ul-dropdown-height          --ul-dropdown-padding-x    --ul-dropdown-font-size
+//   --ul-dropdown-radius          --ul-dropdown-bg           --ul-dropdown-color
+//   --ul-dropdown-border-color    --ul-dropdown-border-color-hover
+//   --ul-dropdown-max-height      (list height before scrolling, default 18rem)
+//   --ul-dropdown-popup-max-width (only with popupWidth="auto", default 32rem)
+//   --ul-dropdown-popup-bg        --ul-dropdown-popup-radius --ul-dropdown-popup-shadow
+//   --ul-dropdown-option-bg-active --ul-dropdown-option-color-selected
+//
+// The popup may be portalled out of `.ul-dropdown`, so its variables are read on
+// the popup itself: set them on the theme scope or with `popupClassName`.
+// -----------------------------------------------------------------------------
+
+.ul-dropdown__control {
+  display: flex;
+  align-items: stretch;
+  gap: var(--ul-spacing-1);
+  min-width: 0;
+}
+
+.ul-dropdown__trigger {
+  @include component-root;
+  @include transition(border-color, box-shadow, background-color);
+
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--ul-spacing-2);
+  min-width: 0;
+  min-height: var(--ul-dropdown-height, var(--ul-input-height, var(--_ul-input-height)));
+  padding: var(--ul-spacing-1)
+    var(--ul-dropdown-padding-x, var(--ul-input-padding-x, var(--_ul-input-padding-x)));
+  border: var(--ul-border-width-thin) solid
+    var(
+      --_ul-dropdown-state-border,
+      var(
+        --_ul-dropdown-hover-border,
+        var(--ul-dropdown-border-color, var(--ul-color-border-strong))
+      )
+    );
+  border-radius: var(--ul-dropdown-radius, var(--ul-radius-md));
+  background-color: var(--ul-dropdown-bg, var(--ul-color-surface));
+  color: var(--ul-dropdown-color, var(--ul-color-text));
+  box-shadow: var(--ul-shadow-xs);
+  font-size: var(--ul-dropdown-font-size, var(--ul-input-font-size, var(--_ul-input-font-size)));
+  line-height: var(--ul-line-height-normal);
+  text-align: start;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover:not([aria-disabled='true'], :focus-visible) {
+    --_ul-dropdown-hover-border: var(--ul-dropdown-border-color-hover, var(--ul-color-text-muted));
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+    --_ul-dropdown-state-border: var(--ul-color-focus);
+  }
+
+  &[aria-expanded='true'] {
+    --_ul-dropdown-state-border: var(--ul-color-focus);
+  }
+
+  &[aria-invalid='true'] {
+    --_ul-dropdown-state-border: var(--ul-color-danger);
+  }
+
+  &[aria-invalid='true']:focus-visible {
+    outline-color: var(--ul-color-danger);
+  }
+
+  &[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+.ul-dropdown__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .ul-dropdown__trigger--placeholder & {
+    color: var(--ul-color-text-subtle);
+  }
+}
+
+.ul-dropdown__caret {
+  display: inline-flex;
+  flex: none;
+  color: var(--ul-color-text-muted);
+  @include transition(transform);
+
+  .ul-dropdown__trigger[aria-expanded='true'] & {
+    transform: rotate(180deg);
+  }
+}
+
+// Previous / next buttons
+.ul-dropdown__nav {
+  @include component-root;
+  @include transition(border-color, background-color);
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--ul-dropdown-height, var(--ul-input-height, var(--_ul-input-height)));
+  min-height: var(--ul-dropdown-height, var(--ul-input-height, var(--_ul-input-height)));
+  margin: 0;
+  padding: 0;
+  border: var(--ul-border-width-thin) solid
+    var(--ul-dropdown-border-color, var(--ul-color-border-strong));
+  border-radius: var(--ul-dropdown-radius, var(--ul-radius-md));
+  background-color: var(--ul-dropdown-bg, var(--ul-color-surface));
+  color: var(--ul-color-text);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--ul-color-surface-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--ul-color-surface-active);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+// Popup (may be portalled: everything it needs is declared here)
+.ul-dropdown__popup {
+  @include component-root;
+
+  position: fixed;
+  z-index: var(--ul-z-index-dropdown);
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  max-width: min(var(--ul-dropdown-popup-max-width, 32rem), calc(100vw - 16px));
+  padding: var(--ul-spacing-1);
+  border: var(--ul-border-width-thin) solid var(--ul-color-border);
+  border-radius: var(--ul-dropdown-popup-radius, var(--ul-radius-md));
+  background-color: var(--ul-dropdown-popup-bg, var(--ul-color-surface-elevated));
+  color: var(--ul-color-text);
+  box-shadow: var(--ul-dropdown-popup-shadow, var(--ul-shadow-lg));
+  font-size: var(--ul-font-size-sm);
+  line-height: var(--ul-line-height-snug);
+
+  &--lg {
+    font-size: var(--ul-font-size-md);
+  }
+}
+
+.ul-dropdown__listbox {
+  max-height: min(var(--ul-dropdown-max-height, 18rem), var(--_ul-dropdown-available, 100vh));
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+
+.ul-dropdown__empty {
+  padding: var(--ul-spacing-2) var(--ul-spacing-3);
+  color: var(--ul-color-text-muted);
+}
+
+.ul-dropdown__option {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ul-spacing-2);
+  padding: var(--ul-spacing-2) var(--ul-spacing-2);
+  border-radius: var(--ul-radius-sm);
+  cursor: pointer;
+
+  &--active {
+    background-color: var(--ul-dropdown-option-bg-active, var(--ul-color-surface-hover));
+  }
+
+  &--selected {
+    color: var(--ul-dropdown-option-color-selected, var(--ul-color-primary-text));
+    font-weight: var(--ul-font-weight-medium);
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+.ul-dropdown__indicator {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1lh;
+  color: var(--ul-color-primary);
+
+  &--checkbox {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 1rem;
+      height: 1rem;
+      border: var(--ul-border-width-thin) solid var(--ul-color-border-strong);
+      border-radius: var(--ul-radius-sm);
+      background-color: var(--ul-color-surface);
+    }
+
+    .ul-dropdown__option--selected &::before {
+      border-color: var(--ul-color-primary);
+      background-color: var(--ul-color-primary);
+    }
+
+    svg {
+      position: relative;
+      width: 0.75rem;
+      height: 0.75rem;
+      color: var(--ul-color-on-primary);
+    }
+  }
+}
+
+.ul-dropdown__option-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 1lh;
+  color: var(--ul-color-text-muted);
+}
+
+.ul-dropdown__option-text {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.ul-dropdown__option-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .ul-dropdown__popup--wrap & {
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
+.ul-dropdown__option-description {
+  color: var(--ul-color-text-muted);
+  font-size: var(--ul-font-size-xs);
+  font-weight: var(--ul-font-weight-regular);
+  line-height: var(--ul-line-height-normal);
+}
+
+@media (forced-colors: active) {
+  .ul-dropdown__option--active {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

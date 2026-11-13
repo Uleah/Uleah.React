@@ -9,6 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Dropdown,
   Input,
   UleahProvider,
 } from '../../src/index.js';
@@ -19,6 +20,12 @@ import { axeViolations } from '../../src/test/axe.js';
  * names, ARIA validity). They do not replace manual keyboard and screen
  * reader testing. Colour contrast is checked in contrast.test.ts.
  */
+const fruits = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'banana', label: 'Banana', description: 'Yellow' },
+  { value: 'cherry', label: 'Cherry', disabled: true },
+];
+
 function Showcase() {
   return (
     <main>
@@ -39,6 +46,13 @@ function Showcase() {
       <Input label="Locked" disabled defaultValue="x" />
       <Input label="Read only" readOnly defaultValue="x" />
       <Input aria-label="Unlabelled visually" />
+
+      <Dropdown label="Fruit" options={fruits} defaultValue="banana" />
+      <Dropdown label="Fruits" multiple options={fruits} defaultValue={['apple']} />
+      <Dropdown label="Step" options={fruits} navigationButtons helperText="Use the arrows" />
+      <Dropdown label="Invalid" options={fruits} error="Required" required />
+      <Dropdown label="Off" options={fruits} disabled />
+      <Dropdown aria-label="Open list" options={fruits} defaultOpen portal={false} />
 
       <Card as="section" aria-labelledby="card-title">
         <CardHeader>

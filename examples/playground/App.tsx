@@ -9,6 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Dropdown,
   Input,
   UleahProvider,
   createLocalStorageThemeStorage,
@@ -97,6 +98,27 @@ export function App() {
                 helperText="We'll send a confirmation link."
                 error={emailError}
                 autoComplete="email"
+              />
+              <Dropdown
+                label="Role"
+                options={[
+                  { value: 'admin', label: 'Admin', description: 'Full access' },
+                  { value: 'editor', label: 'Editor', description: 'Can edit content' },
+                  { value: 'viewer', label: 'Viewer', description: 'Read only' },
+                ]}
+                defaultValue="editor"
+                navigationButtons
+              />
+              <Dropdown
+                label="Notifications"
+                multiple
+                options={[
+                  { value: 'email', label: 'Email' },
+                  { value: 'sms', label: 'SMS' },
+                  { value: 'push', label: 'Push' },
+                  { value: 'slack', label: 'Slack', disabled: true },
+                ]}
+                defaultValue={['email']}
               />
               <Input
                 label="Workspace"
