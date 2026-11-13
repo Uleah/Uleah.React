@@ -2,7 +2,6 @@ import {
   useCallback,
   useEffect,
   useId,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -26,13 +25,8 @@ import type {
   DropdownRow,
   DropdownSeparator,
 } from './Dropdown.types.js';
+import { useFloating, useIsomorphicLayoutEffect } from '../../utils/floating.js';
 
-/** `useLayoutEffect` on the client, `useEffect` on the server (avoids the SSR warning). */
-const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
-
-const VIEWPORT_MARGIN = 8;
-const POPUP_GAP = 4;
-const MIN_LIST_HEIGHT = 48;
 const TYPEAHEAD_TIMEOUT = 500;
 const PAGE_STEP = 10;
 /** Height rendered by a virtualized list: comfortably more than any reasonable max-height. */
@@ -653,88 +647,18 @@ export function useDropdown({
   // ---------------------------------------------------------------------------
   // Popup: portal container, positioning, focus and scrolling
   // ---------------------------------------------------------------------------
-  const [container, setContainer] = useState<HTMLElement | null>(null);
-
-  useIsomorphicLayoutEffect(() => {
-    if (!open || !portal) return;
-    // Attach to the nearest theme scope so tokens and custom themes still apply.
-    setContainer(triggerRef.current?.closest<HTMLElement>('.ul-theme') ?? document.body);
-  }, [open, portal]);
-
-  const popupMounted = open && (!portal || container !== null);
-
-  const updatePosition = useCallback(() => {
-    const trigger = triggerRef.current;
-    const popup = popupRef.current;
-    if (!trigger || !popup) return;
-
-    const rect = trigger.getBoundingClientRect();
-    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    if (popupWidth === 'trigger') {
-      popup.style.width = `${rect.width}px`;
-      popup.style.minWidth = '';
-    } else {
-      popup.style.width = '';
-      popup.style.minWidth = `${rect.width}px`;
-    }
-
-    // Measure the natural height, then decide the side and cap the list height.
-    popup.style.removeProperty('--_ul-dropdown-available');
-    const natural = popup.offsetHeight;
-    const spaceBelow = viewportHeight - rect.bottom - POPUP_GAP - VIEWPORT_MARGIN;
-    const spaceAbove = rect.top - POPUP_GAP - VIEWPORT_MARGIN;
-    const side =
-      placement === 'top' || placement === 'bottom'
-        ? placement
-        : natural <= spaceBelow || spaceBelow >= spaceAbove
-          ? 'bottom'
-          : 'top';
-    const available = Math.max(side === 'bottom' ? spaceBelow : spaceAbove, 0);
-    if (natural > available) {
-      const chrome = popup.offsetHeight - (listboxRef.current?.offsetHeight ?? 0);
-      popup.style.setProperty(
-        '--_ul-dropdown-available',
-        `${Math.max(available - chrome, MIN_LIST_HEIGHT)}px`,
-      );
-    }
-
-    const height = popup.offsetHeight;
-    const width = popup.offsetWidth;
-    const maxLeft = Math.max(viewportWidth - VIEWPORT_MARGIN - width, VIEWPORT_MARGIN);
-    const left = Math.min(Math.max(rect.left, VIEWPORT_MARGIN), maxLeft);
-    const top = side === 'bottom' ? rect.bottom + POPUP_GAP : rect.top - POPUP_GAP - height;
-
-    popup.style.left = `${left}px`;
-    popup.style.top = `${top}px`;
-    popup.dataset.placement = side;
-  }, [placement, popupWidth]);
-
-  useIsomorphicLayoutEffect(() => {
-    if (!popupMounted) return;
-    updatePosition();
-
-    let frame = 0;
-    const schedule = (event?: Event) => {
-      // Scrolling inside the list itself doesn't move the popup.
-      if (event && popupRef.current?.contains(event.target as Node)) return;
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(updatePosition);
-    };
-    window.addEventListener('resize', schedule);
-    window.addEventListener('scroll', schedule, true);
-    const observer =
-      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => schedule());
-    if (triggerRef.current) observer?.observe(triggerRef.current);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('resize', schedule);
-      window.removeEventListener('scroll', schedule, true);
-      observer?.disconnect();
-    };
-  }, [popupMounted, updatePosition, rows, selectedValues, loading]);
+  const floating = useFloating({
+    open,
+    portal,
+    anchorRef: triggerRef,
+    floatingRef: popupRef,
+    scrollRef: listboxRef,
+    placement,
+    width: popupWidth === 'trigger' ? 'anchor' : 'auto',
+    contentKey: `${rows.length}:${selectedValues.join('\u0000')}:${loading}`,
+  });
+  const container = floating.container;
+  const popupMounted = floating.mounted;
 
   // Move focus into the search box when the popup opens.
   useEffect(() => {
@@ -920,7 +844,7 @@ export function useDropdown({
 
     portal,
     /** Where the popup should be portalled (null until known, or when `portal` is false). */
-    portalContainer: portal ? container : null,
+    portalContainer: container,
     /** True when the popup should be in the DOM. */
     popupMounted,
     triggerRef: triggerRef as RefObject<HTMLElement | null>,

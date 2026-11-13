@@ -171,7 +171,7 @@
 }
 
 .ul-dropdown__listbox {
-  max-height: min(var(--ul-dropdown-max-height, 18rem), var(--_ul-dropdown-available, 100vh));
+  max-height: min(var(--ul-dropdown-max-height, 18rem), var(--_ul-floating-available, 100vh));
   margin: 0;
   padding: 0;
   overflow-y: auto;
