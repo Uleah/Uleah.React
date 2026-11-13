@@ -9,6 +9,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  DatePicker,
   Dropdown,
   Input,
   UleahProvider,
@@ -120,6 +121,7 @@ export function App() {
                 ]}
                 defaultValue={['email']}
               />
+              <DatePicker mode="range" label="Trial period" clearable />
               <Input
                 label="Workspace"
                 defaultValue="atlas"

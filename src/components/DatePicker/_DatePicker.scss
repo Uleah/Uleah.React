@@ -1,0 +1,481 @@
+@use '../../styles/abstracts' as *;
+
+// -----------------------------------------------------------------------------
+// Calendar + DatePicker
+//
+// Public customization points:
+//
+//   --ul-calendar-cell-size        (day button size, default 2.25rem)
+//   --ul-calendar-selected-bg      --ul-calendar-selected-color
+//   --ul-calendar-range-bg         (band between the start and the end)
+//   --ul-calendar-today-color
+//   --ul-datepicker-popup-bg       --ul-datepicker-popup-radius  --ul-datepicker-popup-shadow
+//
+// The trigger reuses the Dropdown/Input variables (--ul-dropdown-*, --ul-input-*).
+// -----------------------------------------------------------------------------
+
+.ul-calendar {
+  @include component-root;
+
+  --_ul-cell: var(--ul-calendar-cell-size, 2.25rem);
+
+  display: inline-block;
+  color: var(--ul-color-text);
+  font-size: var(--ul-font-size-sm);
+  line-height: 1;
+}
+
+.ul-calendar__months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ul-spacing-6);
+}
+
+.ul-calendar__month {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ul-spacing-2);
+}
+
+.ul-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ul-spacing-1);
+  min-height: var(--_ul-cell);
+}
+
+.ul-calendar__nav,
+.ul-calendar__nav-spacer {
+  flex: none;
+  width: var(--_ul-cell);
+  height: var(--_ul-cell);
+}
+
+.ul-calendar__nav {
+  @include component-root;
+  @include transition(background-color);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ul-radius-md);
+  background: transparent;
+  color: var(--ul-color-text-muted);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--ul-color-surface-hover);
+    color: var(--ul-color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+.ul-calendar__caption {
+  flex: 1 1 auto;
+  padding: var(--ul-spacing-1) var(--ul-spacing-2);
+  font-weight: var(--ul-font-weight-semibold);
+  text-align: center;
+  text-transform: capitalize;
+
+  &--button {
+    @include component-root;
+    @include transition(background-color);
+
+    margin: 0;
+    border: 0;
+    border-radius: var(--ul-radius-md);
+    background: transparent;
+    color: var(--ul-color-text);
+    font-size: inherit;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--ul-color-surface-hover);
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+}
+
+.ul-calendar__grid {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.ul-calendar__weekday {
+  width: var(--_ul-cell);
+  height: 1.75rem;
+  padding: 0;
+  color: var(--ul-color-text-muted);
+  font-size: var(--ul-font-size-xs);
+  font-weight: var(--ul-font-weight-medium);
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.ul-calendar__cell {
+  position: relative;
+  width: var(--_ul-cell);
+  height: var(--_ul-cell);
+  padding: 0;
+  text-align: center;
+
+  // Range band behind the days; the ends are rounded.
+  &--in-range {
+    background-color: var(--ul-calendar-range-bg, var(--ul-color-primary-subtle));
+  }
+
+  &--range-start {
+    border-start-start-radius: var(--ul-radius-full);
+    border-end-start-radius: var(--ul-radius-full);
+  }
+
+  &--range-end {
+    border-start-end-radius: var(--ul-radius-full);
+    border-end-end-radius: var(--ul-radius-full);
+  }
+
+  // While choosing the end, a lighter band follows the pointer / focus.
+  &--preview {
+    background-color: color-mix(
+      in srgb,
+      var(--ul-calendar-range-bg, var(--ul-color-primary-subtle)) 55%,
+      transparent
+    );
+  }
+}
+
+.ul-calendar__outside-day {
+  color: var(--ul-color-text-subtle);
+  opacity: 0.6;
+}
+
+.ul-calendar__day,
+.ul-calendar__item {
+  @include component-root;
+  @include transition(background-color, color);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  &:hover:not([aria-disabled='true']) {
+    background-color: var(--ul-color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.ul-calendar__day {
+  width: var(--_ul-cell);
+  height: var(--_ul-cell);
+  border-radius: var(--ul-radius-full);
+
+  &--today {
+    color: var(--ul-calendar-today-color, var(--ul-color-primary-text));
+    font-weight: var(--ul-font-weight-bold);
+    box-shadow: inset 0 0 0 var(--ul-border-width-thin) currentColor;
+  }
+
+  &--selected,
+  &--selected:hover:not([aria-disabled='true']) {
+    background-color: var(--ul-calendar-selected-bg, var(--ul-color-primary));
+    color: var(--ul-calendar-selected-color, var(--ul-color-on-primary));
+    font-weight: var(--ul-font-weight-semibold);
+    box-shadow: none;
+  }
+
+  &--disabled {
+    color: var(--ul-color-text-subtle);
+    text-decoration: line-through;
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+// Month and year grids
+.ul-calendar__grid--items .ul-calendar__cell {
+  width: auto;
+  height: auto;
+  padding: var(--ul-spacing-1);
+}
+
+.ul-calendar__item {
+  width: calc(var(--_ul-cell) * 2.25);
+  height: calc(var(--_ul-cell) * 1.1);
+  border-radius: var(--ul-radius-md);
+  text-transform: capitalize;
+
+  &--current {
+    color: var(--ul-color-primary-text);
+    font-weight: var(--ul-font-weight-bold);
+  }
+
+  &--selected,
+  &--selected:hover {
+    background-color: var(--ul-calendar-selected-bg, var(--ul-color-primary));
+    color: var(--ul-calendar-selected-color, var(--ul-color-on-primary));
+  }
+
+  &--disabled {
+    color: var(--ul-color-text-subtle);
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+// -----------------------------------------------------------------------------
+// DatePicker field
+// -----------------------------------------------------------------------------
+.ul-datepicker__control {
+  position: relative;
+  display: flex;
+  min-width: 0;
+}
+
+.ul-datepicker__trigger {
+  @include component-root;
+  @include transition(border-color, box-shadow, background-color);
+
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: var(--ul-spacing-2);
+  min-width: 0;
+  min-height: var(--ul-dropdown-height, var(--ul-input-height, var(--_ul-input-height)));
+  margin: 0;
+  padding: var(--ul-spacing-1)
+    var(--ul-dropdown-padding-x, var(--ul-input-padding-x, var(--_ul-input-padding-x)));
+  border: var(--ul-border-width-thin) solid
+    var(
+      --_ul-datepicker-state-border,
+      var(
+        --_ul-datepicker-hover-border,
+        var(--ul-dropdown-border-color, var(--ul-color-border-strong))
+      )
+    );
+  border-radius: var(--ul-dropdown-radius, var(--ul-radius-md));
+  background-color: var(--ul-dropdown-bg, var(--ul-color-surface));
+  color: var(--ul-dropdown-color, var(--ul-color-text));
+  box-shadow: var(--ul-shadow-xs);
+  font-size: var(--ul-dropdown-font-size, var(--ul-input-font-size, var(--_ul-input-font-size)));
+  line-height: var(--ul-line-height-normal);
+  text-align: start;
+  cursor: pointer;
+
+  &:hover:not(:disabled, :focus-visible) {
+    --_ul-datepicker-hover-border: var(
+      --ul-dropdown-border-color-hover,
+      var(--ul-color-text-muted)
+    );
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+    --_ul-datepicker-state-border: var(--ul-color-focus);
+  }
+
+  &[aria-expanded='true'] {
+    --_ul-datepicker-state-border: var(--ul-color-focus);
+  }
+
+  .ul-field--invalid & {
+    --_ul-datepicker-state-border: var(--ul-color-danger);
+  }
+
+  .ul-field--invalid &:focus-visible {
+    outline-color: var(--ul-color-danger);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--ul-opacity-disabled);
+  }
+}
+
+.ul-datepicker__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  .ul-datepicker__trigger--placeholder & {
+    color: var(--ul-color-text-subtle);
+  }
+
+  .ul-datepicker--clearable & {
+    margin-inline-end: 1.5rem;
+  }
+}
+
+.ul-datepicker__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--ul-color-text-muted);
+}
+
+.ul-datepicker__clear {
+  @include component-root;
+
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: calc(
+    var(--ul-dropdown-padding-x, var(--ul-input-padding-x, var(--_ul-input-padding-x))) + 1.5rem
+  );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ul-radius-sm);
+  background: transparent;
+  color: var(--ul-color-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ul-color-surface-hover);
+    color: var(--ul-color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+  }
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Popup (may be portalled: everything it needs is declared here)
+// -----------------------------------------------------------------------------
+.ul-datepicker__popup {
+  @include component-root;
+
+  position: fixed;
+  z-index: var(--ul-z-index-popover);
+  top: 0;
+  left: 0;
+  display: flex;
+  max-width: calc(100vw - 16px);
+  max-height: var(--_ul-floating-available, none);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: var(--ul-border-width-thin) solid var(--ul-color-border);
+  border-radius: var(--ul-datepicker-popup-radius, var(--ul-radius-lg));
+  background-color: var(--ul-datepicker-popup-bg, var(--ul-color-surface-elevated));
+  color: var(--ul-color-text);
+  box-shadow: var(--ul-datepicker-popup-shadow, var(--ul-shadow-lg));
+}
+
+.ul-datepicker__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ul-spacing-3);
+  padding: var(--ul-spacing-3);
+}
+
+.ul-datepicker__presets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ul-spacing-1);
+  min-width: 9rem;
+  padding: var(--ul-spacing-3) var(--ul-spacing-2);
+  border-inline-end: var(--ul-border-width-thin) solid var(--ul-color-border);
+}
+
+.ul-datepicker__preset {
+  @include component-root;
+  @include transition(background-color, color);
+
+  margin: 0;
+  padding: var(--ul-spacing-2) var(--ul-spacing-3);
+  border: 0;
+  border-radius: var(--ul-radius-md);
+  background: transparent;
+  color: var(--ul-color-text);
+  font-size: var(--ul-font-size-sm);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ul-color-surface-hover);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+  }
+
+  &[aria-pressed='true'] {
+    background-color: var(--ul-color-primary-subtle);
+    color: var(--ul-color-primary-text);
+    font-weight: var(--ul-font-weight-semibold);
+  }
+}
+
+.ul-datepicker__footer {
+  padding-block-start: var(--ul-spacing-3);
+  border-block-start: var(--ul-border-width-thin) solid var(--ul-color-border);
+}
+
+// Narrow screens: presets become a horizontal row above the calendar.
+@media (max-width: 40rem) {
+  .ul-datepicker__popup--with-presets {
+    flex-direction: column;
+  }
+
+  .ul-datepicker__presets {
+    flex-direction: row;
+    min-width: 0;
+    overflow-x: auto;
+    border-inline-end: 0;
+    border-block-end: var(--ul-border-width-thin) solid var(--ul-color-border);
+  }
+}
+
+@media (forced-colors: active) {
+  .ul-calendar__day--selected,
+  .ul-calendar__item--selected {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+}

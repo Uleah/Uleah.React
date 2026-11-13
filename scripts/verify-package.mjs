@@ -101,6 +101,8 @@ for (const name of [
   'Card',
   'Badge',
   'Dropdown',
+  'DatePicker',
+  'Calendar',
   'UleahProvider',
   'useTheme',
   'defineTheme',
@@ -134,6 +136,8 @@ for (const needle of [
   '.ul-card',
   '.ul-badge',
   '.ul-dropdown',
+  '.ul-calendar',
+  '.ul-datepicker',
 ]) {
   check(css.includes(needle), `styles.css contains ${needle}`);
 }

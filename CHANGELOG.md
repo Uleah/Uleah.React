@@ -18,6 +18,10 @@ changes.
   search (`filter={false}`, `onSearchChange`, `loading`, `onLoadMore`); option groups and
   separators; virtualization for thousands of options; `clearable`; `selectAll` and Ctrl/⌘+A in
   multiple mode; `closeOnSelect`.
+- `DatePicker` and `Calendar`: single dates and ranges (hover preview, two months on wide
+  screens), min/max and disabled days, month and year views, presets, locales via `Intl`, form
+  fields (`YYYY-MM-DD`), clear button, full keyboard support and an adaptive popup.
+- `toISODate` and `parseISODate` helpers.
 - `useDropdown` (headless logic) and `DropdownPopup`, to build custom triggers such as editable
   table cells.
 

@@ -9,6 +9,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
+  Calendar,
+  DatePicker,
   Dropdown,
   Input,
   UleahProvider,
@@ -75,6 +77,33 @@ function Showcase() {
         defaultValue={['apple']}
         defaultOpen
         portal={false}
+      />
+      <DatePicker label="Due date" today={new Date(2026, 10, 13)} helperText="Weekdays only" />
+      <DatePicker label="Required date" required error="Pick a date" />
+      <DatePicker label="Disabled date" disabled />
+      <DatePicker
+        mode="range"
+        label="Stay"
+        defaultValue={{ start: new Date(2026, 10, 3), end: new Date(2026, 10, 10) }}
+        presets={[
+          {
+            label: 'Next week',
+            value: { start: new Date(2026, 10, 16), end: new Date(2026, 10, 22) },
+          },
+        ]}
+        defaultOpen
+        portal={false}
+        clearable
+      />
+      <Calendar
+        aria-label="Inline calendar"
+        today={new Date(2026, 10, 13)}
+        min={new Date(2026, 10, 5)}
+      />
+      <Calendar
+        mode="range"
+        numberOfMonths={2}
+        defaultValue={{ start: new Date(2026, 10, 28), end: new Date(2026, 11, 4) }}
       />
       <Dropdown
         label="Virtual"
