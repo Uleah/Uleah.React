@@ -179,11 +179,6 @@
   list-style: none;
 }
 
-.ul-dropdown__empty {
-  padding: var(--ul-spacing-2) var(--ul-spacing-3);
-  color: var(--ul-color-text-muted);
-}
-
 .ul-dropdown__option {
   display: flex;
   align-items: flex-start;
@@ -282,5 +277,190 @@
   .ul-dropdown__option--active {
     outline: 2px solid Highlight;
     outline-offset: -2px;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Clear button (sits over the end of the trigger, before the caret)
+// -----------------------------------------------------------------------------
+.ul-dropdown__trigger-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ul-dropdown--clearable .ul-dropdown__value {
+  // Room for the clear button, which sits between the value and the caret.
+  margin-inline-end: 1.5rem;
+}
+
+.ul-dropdown__clear {
+  @include component-root;
+  @include transition(background-color, color);
+
+  position: absolute;
+  inset-block: 0;
+  // Trigger padding + caret (1rem) + gap.
+  inset-inline-end: calc(
+    var(--ul-dropdown-padding-x, var(--ul-input-padding-x, var(--_ul-input-padding-x))) + 1.5rem
+  );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: auto 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ul-radius-sm);
+  background: transparent;
+  color: var(--ul-color-text-muted);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ul-color-surface-hover);
+    color: var(--ul-color-text);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+  }
+
+  svg {
+    width: 0.875rem;
+    height: 0.875rem;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Popup: search box, select-all toolbar, status, groups and separators
+// -----------------------------------------------------------------------------
+.ul-dropdown__search {
+  padding: var(--ul-spacing-1) var(--ul-spacing-1) var(--ul-spacing-2);
+}
+
+.ul-dropdown__search-input {
+  @include component-root;
+
+  display: block;
+  width: 100%;
+  min-height: var(--ul-control-height-sm);
+  margin: 0;
+  padding: 0 var(--ul-spacing-2);
+  border: var(--ul-border-width-thin) solid var(--ul-color-border-strong);
+  border-radius: var(--ul-radius-sm);
+  background-color: var(--ul-color-surface);
+  color: var(--ul-color-text);
+  font-size: var(--ul-font-size-sm);
+
+  &::placeholder {
+    color: var(--ul-color-text-subtle);
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+    outline-offset: 0;
+    border-color: var(--ul-color-focus);
+  }
+}
+
+.ul-dropdown__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ul-spacing-2);
+  margin-block-end: var(--ul-spacing-1);
+  padding: 0 var(--ul-spacing-1) var(--ul-spacing-1);
+  border-block-end: var(--ul-border-width-thin) solid var(--ul-color-border);
+}
+
+.ul-dropdown__toolbar-button {
+  @include component-root;
+
+  margin: 0;
+  padding: var(--ul-spacing-1) var(--ul-spacing-2);
+  border: 0;
+  border-radius: var(--ul-radius-sm);
+  background: transparent;
+  color: var(--ul-color-primary-text);
+  font-size: var(--ul-font-size-xs);
+  font-weight: var(--ul-font-weight-semibold);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--ul-color-primary-subtle);
+  }
+}
+
+.ul-dropdown__toolbar-count {
+  color: var(--ul-color-text-muted);
+  font-size: var(--ul-font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.ul-dropdown__status {
+  padding: var(--ul-spacing-2) var(--ul-spacing-3);
+  color: var(--ul-color-text-muted);
+}
+
+.ul-dropdown__group + .ul-dropdown__group,
+.ul-dropdown__option + .ul-dropdown__group {
+  margin-block-start: var(--ul-spacing-1);
+}
+
+.ul-dropdown__group-label {
+  display: flex;
+  align-items: center;
+  padding: var(--ul-spacing-1) var(--ul-spacing-2);
+  color: var(--ul-color-text-muted);
+  font-size: var(--ul-font-size-xs);
+  font-weight: var(--ul-font-weight-semibold);
+  letter-spacing: var(--ul-letter-spacing-wide);
+  text-transform: uppercase;
+}
+
+.ul-dropdown__separator {
+  height: var(--ul-border-width-thin);
+  margin: var(--ul-spacing-1) calc(var(--ul-spacing-1) * -1);
+  background-color: var(--ul-color-border);
+}
+
+// -----------------------------------------------------------------------------
+// Virtualized list: every row has the same height so positions can be computed.
+// -----------------------------------------------------------------------------
+.ul-dropdown__listbox--virtual {
+  .ul-dropdown__option,
+  .ul-dropdown__group-label {
+    box-sizing: border-box;
+    height: var(--_ul-dropdown-row-height);
+    align-items: center;
+    padding-block: 0;
+    overflow: hidden;
+  }
+
+  .ul-dropdown__group,
+  .ul-dropdown__option + .ul-dropdown__group,
+  .ul-dropdown__group + .ul-dropdown__group {
+    margin: 0;
+  }
+
+  .ul-dropdown__option-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ul-dropdown__separator {
+    height: var(--_ul-dropdown-row-height);
+    margin: 0;
+    background: linear-gradient(var(--ul-color-border), var(--ul-color-border)) center / 100%
+      var(--ul-border-width-thin) no-repeat;
+  }
+
+  .ul-dropdown__indicator {
+    height: auto;
   }
 }

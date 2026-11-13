@@ -14,6 +14,7 @@ describe('public API', () => {
         'CardHeader',
         'CardTitle',
         'Dropdown',
+        'DropdownPopup',
         'Input',
         'UleahProvider',
         'breakpoints',
@@ -22,12 +23,14 @@ describe('public API', () => {
         'cssVar',
         'cssVarName',
         'defineTheme',
+        'defaultDropdownFilter',
         'mediaQueryUp',
         'scaleTokenNames',
         'shadowTokenNames',
         'themeTokenNames',
         'useSystemTheme',
         'useTheme',
+        'useDropdown',
       ].sort(),
     );
   });

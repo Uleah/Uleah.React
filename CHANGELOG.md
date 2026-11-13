@@ -14,6 +14,12 @@ changes.
   long-option truncation or wrapping, custom option and value rendering, hidden inputs for forms,
   and an adaptive popup that flips above the trigger and is portalled into the theme scope so it
   is not clipped inside tables or scrolling containers.
+- `Dropdown`: search with accent-insensitive local filtering, custom filters and server-side
+  search (`filter={false}`, `onSearchChange`, `loading`, `onLoadMore`); option groups and
+  separators; virtualization for thousands of options; `clearable`; `selectAll` and Ctrl/⌘+A in
+  multiple mode; `closeOnSelect`.
+- `useDropdown` (headless logic) and `DropdownPopup`, to build custom triggers such as editable
+  table cells.
 
 ## [0.1.0] - Unreleased
 

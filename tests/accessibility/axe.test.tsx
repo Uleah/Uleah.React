@@ -26,6 +26,18 @@ const fruits = [
   { value: 'cherry', label: 'Cherry', disabled: true },
 ];
 
+const groupedFruits = [
+  { value: 'any', label: 'Any' },
+  { type: 'separator' as const },
+  { label: 'Berries', options: [{ value: 'straw', label: 'Strawberry' }] },
+  { label: 'Pomes', options: fruits },
+];
+
+const manyFruits = Array.from({ length: 200 }, (_, i) => ({
+  value: `f-${i}`,
+  label: `Fruit ${i}`,
+}));
+
 function Showcase() {
   return (
     <main>
@@ -53,6 +65,25 @@ function Showcase() {
       <Dropdown label="Invalid" options={fruits} error="Required" required />
       <Dropdown label="Off" options={fruits} disabled />
       <Dropdown aria-label="Open list" options={fruits} defaultOpen portal={false} />
+      <Dropdown
+        label="Searchable"
+        options={groupedFruits}
+        searchable
+        multiple
+        selectAll
+        clearable
+        defaultValue={['apple']}
+        defaultOpen
+        portal={false}
+      />
+      <Dropdown
+        label="Virtual"
+        options={manyFruits}
+        virtualized
+        defaultOpen
+        portal={false}
+        defaultValue="f-10"
+      />
 
       <Card as="section" aria-labelledby="card-title">
         <CardHeader>

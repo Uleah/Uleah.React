@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Badge } from '../Badge/index.js';
 import { Dropdown } from './Dropdown.js';
-import type { DropdownOption, DropdownProps, DropdownSingleProps } from './Dropdown.types.js';
+import { DropdownPopup } from './DropdownPopup.js';
+import { useDropdown } from './useDropdown.js';
+import type {
+  DropdownOption,
+  DropdownProps,
+  DropdownSingleProps,
+  DropdownItem,
+} from './Dropdown.types.js';
 
 const countries: DropdownOption[] = [
   { value: 'ar', label: 'Argentina' },
@@ -157,6 +164,183 @@ export const InsideClippingContainer: Story = {
                 aria-labelledby={`col-country row-${person}`}
                 defaultValue="es"
               />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  ),
+};
+
+const regions: DropdownItem[] = [
+  { value: 'any', label: 'Any region' },
+  { type: 'separator' },
+  {
+    label: 'Europe',
+    options: [
+      { value: 'es', label: 'Spain' },
+      { value: 'pt', label: 'Portugal' },
+      { value: 'fr', label: 'France' },
+    ],
+  },
+  {
+    label: 'Americas',
+    options: [
+      { value: 'mx', label: 'Mexico' },
+      { value: 'co', label: 'Colombia' },
+      { value: 'us', label: 'United States', disabled: true },
+    ],
+  },
+];
+
+/** Type to filter. Matching ignores case and accents ("peru" finds "Perú"). */
+export const Searchable: Story = {
+  args: { searchable: true, clearable: true },
+};
+
+export const GroupsAndSeparators: Story = {
+  args: { label: 'Region', options: regions, searchable: true },
+};
+
+export const MultipleWithSelectAll: Story = {
+  args: {
+    multiple: true,
+    selectAll: true,
+    searchable: true,
+    clearable: true,
+    label: 'Countries',
+    options: regions,
+  },
+};
+
+const manyOptions: DropdownOption[] = Array.from({ length: 5000 }, (_, i) => ({
+  value: `sku-${i}`,
+  label: `Product SKU-${String(i).padStart(5, '0')}`,
+}));
+
+/** 5,000 options: only the visible rows are in the DOM. */
+export const Virtualized: Story = {
+  args: {
+    label: 'Product',
+    options: manyOptions,
+    virtualized: true,
+    searchable: true,
+    defaultValue: 'sku-2500',
+  },
+};
+
+const allCities = [
+  'Barcelona',
+  'Bogotá',
+  'Buenos Aires',
+  'Lima',
+  'Lisboa',
+  'Madrid',
+  'Medellín',
+  'Mexico City',
+  'Montevideo',
+  'Porto',
+  'Quito',
+  'Santiago',
+  'São Paulo',
+  'Sevilla',
+  'Valencia',
+].map((city) => ({ value: city.toLowerCase(), label: city }));
+
+/** Server-side search (simulated 600 ms latency): `filter={false}` + `onSearchChange` + `loading`. */
+export const AsyncSearch: Story = {
+  render: function AsyncSearchStory() {
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState<DropdownOption[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [value, setValue] = useState<string | null>(null);
+    useEffect(() => {
+      if (!query) return;
+      const timer = setTimeout(() => {
+        const q = query.toLowerCase();
+        setResults(allCities.filter((c) => c.label.toLowerCase().includes(q)));
+        setLoading(false);
+      }, 600);
+      return () => clearTimeout(timer);
+    }, [query]);
+    return (
+      <Dropdown
+        label="City"
+        searchable
+        filter={false}
+        options={query ? results : []}
+        searchValue={query}
+        onSearchChange={(next) => {
+          setQuery(next);
+          setLoading(next !== '');
+        }}
+        loading={loading}
+        emptyMessage="Type to search cities"
+        value={value}
+        onChange={setValue}
+        clearable
+      />
+    );
+  },
+};
+
+const statusOptions: DropdownOption[] = [
+  { value: 'todo', label: 'To do' },
+  { value: 'doing', label: 'In progress' },
+  { value: 'done', label: 'Done' },
+];
+
+function StatusCell({ initial, rowLabel }: { initial: string; rowLabel: string }) {
+  const [status, setStatus] = useState(initial);
+  const dropdown = useDropdown({
+    items: statusOptions,
+    value: status,
+    onChange: ([next]) => {
+      if (next) setStatus(next);
+    },
+  });
+  return (
+    <>
+      <button
+        type="button"
+        {...dropdown.getTriggerProps({ 'aria-label': `Status of ${rowLabel}` })}
+        style={{
+          all: 'unset',
+          cursor: 'pointer',
+          padding: '2px 8px',
+          borderRadius: 999,
+          background: 'var(--ul-color-primary-subtle)',
+          color: 'var(--ul-color-primary-text)',
+          fontSize: 'var(--ul-font-size-sm)',
+        }}
+      >
+        {dropdown.selectedOptions[0]?.label} ▾
+      </button>
+      <DropdownPopup dropdown={dropdown} aria-label="Status" size="sm" />
+    </>
+  );
+}
+
+/** `useDropdown` + `DropdownPopup`: any element can be the trigger, e.g. an editable table cell. */
+export const CustomTriggerWithHook: Story = {
+  render: () => (
+    <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <thead>
+        <tr>
+          <th style={{ textAlign: 'start' }}>Task</th>
+          <th style={{ textAlign: 'start' }}>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {[
+          { task: 'Design tokens', status: 'done' },
+          { task: 'Dropdown', status: 'doing' },
+          { task: 'Table', status: 'todo' },
+        ].map(({ task, status }) => (
+          <tr key={task}>
+            <td style={{ padding: '6px 0' }}>{task}</td>
+            <td style={{ overflow: 'hidden' }}>
+              <StatusCell initial={status} rowLabel={task} />
             </td>
           </tr>
         ))}

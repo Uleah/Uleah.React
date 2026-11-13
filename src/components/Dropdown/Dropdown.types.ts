@@ -17,7 +17,7 @@ export type DropdownOptionOverflow = 'truncate' | 'wrap';
 export interface DropdownOption {
   /** Unique value. This is what `value` / `onChange` work with and what forms submit. */
   value: string;
-  /** Text shown in the list and the trigger. Also used for type-ahead. */
+  /** Text shown in the list and the trigger. Used for type-ahead and the default search filter. */
   label: string;
   /** Secondary text below the label. */
   description?: ReactNode;
@@ -27,6 +27,23 @@ export interface DropdownOption {
   disabled?: boolean;
 }
 
+/** A labelled group of options. Groups are announced by screen readers. */
+export interface DropdownGroup {
+  label: string;
+  options: readonly DropdownOption[];
+}
+
+/** A visual divider between options or groups. */
+export interface DropdownSeparator {
+  type: 'separator';
+}
+
+/** Anything that can be passed in `options`. */
+export type DropdownItem = DropdownOption | DropdownGroup | DropdownSeparator;
+
+/** Decides whether an option matches the search query. */
+export type DropdownFilter = (option: DropdownOption, query: string) => boolean;
+
 /** State passed to `renderOption`. */
 export interface DropdownOptionState {
   selected: boolean;
@@ -34,12 +51,26 @@ export interface DropdownOptionState {
   disabled: boolean;
 }
 
+/** One rendered row of the list, after filtering. Exposed by `useDropdown` for custom popups. */
+export type DropdownRow =
+  | {
+      type: 'option';
+      key: string;
+      option: DropdownOption;
+      /** Position among the visible (filtered) options. */
+      index: number;
+      groupKey?: string;
+      groupLabel?: string;
+    }
+  | { type: 'group'; key: string; groupKey: string; groupLabel: string }
+  | { type: 'separator'; key: string; groupKey?: undefined; groupLabel?: undefined };
+
 interface DropdownBaseProps extends Omit<
   HTMLAttributes<HTMLDivElement>,
   'onChange' | 'defaultValue' | 'children' | 'placeholder' | 'className' | 'style'
 > {
-  /** The options, in display order. */
-  options: readonly DropdownOption[];
+  /** Options, groups (`{ label, options }`) and separators (`{ type: 'separator' }`). */
+  options: readonly DropdownItem[];
   /**
    * Visible label. If omitted, pass `aria-label` or `aria-labelledby` (e.g. inside a table cell
    * where the column header labels the control).
@@ -67,6 +98,49 @@ interface DropdownBaseProps extends Omit<
   defaultOpen?: boolean;
   /** Called when the popup wants to open or close. */
   onOpenChange?: (open: boolean) => void;
+  /** Close the popup after choosing an option. @default true for single, false for multiple */
+  closeOnSelect?: boolean;
+
+  /** Show a search box at the top of the popup that filters the options. @default false */
+  searchable?: boolean;
+  /** Controlled search text. */
+  searchValue?: string;
+  /** Initial search text (uncontrolled). */
+  defaultSearchValue?: string;
+  /** Called on every search change. Use it to load options from a server (with `filter={false}`). */
+  onSearchChange?: (query: string) => void;
+  /**
+   * How options are matched against the search text. `true` (default) matches labels,
+   * ignoring case and accents. Pass a function for custom matching, or `false` when the
+   * options are already filtered (server-side search).
+   */
+  filter?: boolean | DropdownFilter;
+  /** Placeholder of the search box. @default 'Search…' */
+  searchPlaceholder?: string;
+  /** Accessible name of the search box. @default 'Search options' */
+  searchLabel?: string;
+  /** Show the loading message (e.g. while fetching options). @default false */
+  loading?: boolean;
+  /** @default 'Loading…' */
+  loadingMessage?: ReactNode;
+  /** Called when the list is scrolled near its end: load the next page here. */
+  onLoadMore?: () => void;
+  /** Shown when the search matches nothing. @default 'No results' */
+  noResultsMessage?: ReactNode;
+
+  /**
+   * Render only the visible rows. Use it for long lists (hundreds or thousands of options).
+   * Every row gets the same height (`itemHeight`), so long labels are truncated.
+   * @default false
+   */
+  virtualized?: boolean;
+  /** Row height in pixels when `virtualized`. @default 32 / 36 / 44 by size */
+  itemHeight?: number;
+
+  /** Show a button that clears the selection (also: Backspace or Delete on the trigger). */
+  clearable?: boolean;
+  /** Accessible name of the clear button. @default 'Clear selection' */
+  clearLabel?: string;
 
   /**
    * Show previous / next arrow buttons on both sides of the trigger that step through the
@@ -93,7 +167,7 @@ interface DropdownBaseProps extends Omit<
    * (tables, cards, scroll areas). @default true
    */
   portal?: boolean;
-  /** Shown in the popup when `options` is empty. @default 'No options' */
+  /** Shown in the popup when there are no options at all. @default 'No options' */
   emptyMessage?: ReactNode;
 
   /** Custom option content. The selection indicator is still rendered by Uleah. */
@@ -137,6 +211,15 @@ export interface DropdownMultipleProps extends DropdownBaseProps {
   maxDisplayedValues?: number;
   /** Summary text for many selected values. @default (count) => `${count} selected` */
   selectedSummary?: (count: number) => string;
+  /**
+   * Show "Select all" / "Deselect all" at the top of the popup. Applies to the enabled options
+   * that match the current search. Keyboard: Ctrl/⌘+A on the trigger. @default false
+   */
+  selectAll?: boolean;
+  /** @default 'Select all' */
+  selectAllLabel?: string;
+  /** @default 'Deselect all' */
+  deselectAllLabel?: string;
 }
 
 export type DropdownProps = DropdownSingleProps | DropdownMultipleProps;
